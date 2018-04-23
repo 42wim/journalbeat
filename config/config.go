@@ -41,6 +41,7 @@ type Config struct {
 	Identifiers          []string           `config:"identifiers"`
 	JournalPaths         []string           `config:"journal_paths"`
 	MatchPatterns        []string           `config:"match_patterns"`
+	NomadContainers      bool               `config:"nomad_containers"`
 }
 
 type pendingQueueConfig struct {

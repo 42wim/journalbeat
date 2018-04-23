@@ -29,7 +29,7 @@ import (
 // - remove underscores from the beginning of fields as they are reserved in
 //   ElasticSearch for metadata information
 // - fields that can be converted to numbers, will be converted to numbers
-func MapStrFromJournalEntry(ev *sdjournal.JournalEntry, cleanKeys bool, convertToNumbers bool, MoveMetadataLocation string) common.MapStr {
+func MapStrFromJournalEntry(ev *sdjournal.JournalEntry, cleanKeys bool, convertToNumbers bool, MoveMetadataLocation string, NomadContainers bool) common.MapStr {
 	m := common.MapStr{}
 	// for the sake of MoveMetadataLocation we will write all the JournalEntry data except the "message" here
 	target := m
@@ -47,6 +47,10 @@ func MapStrFromJournalEntry(ev *sdjournal.JournalEntry, cleanKeys bool, convertT
 	for k, v := range ev.Fields {
 		nk := makeNewKey(k, cleanKeys)
 		nv := makeNewValue(v, convertToNumbers)
+		// strip de suffix from nomad containers
+		if NomadContainers && nk == "container_name" {
+			m["container_name_prefix"] = ev.Fields["CONTAINER_NAME"][0 : len(ev.Fields["CONTAINER_NAME"])-37]
+		}
 		// message Field should be on the top level of the event
 		if nk == "message" {
 			m[nk] = nv

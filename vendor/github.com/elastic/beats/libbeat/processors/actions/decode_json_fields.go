@@ -62,6 +62,12 @@ func newDecodeJSONFields(c common.Config) (processors.Processor, error) {
 func (f decodeJSONFields) Run(event common.MapStr) (common.MapStr, error) {
 	var errs []string
 
+	// if we have a container_name_prefix set this as target
+	if _, ok := event["container_name_prefix"]; ok {
+		k := event["container_name_prefix"].(string)
+		f.target = &k
+	}
+
 	for _, field := range f.fields {
 		data, err := event.GetValue(field)
 		if err != nil && errors.Cause(err) != common.ErrKeyNotFound {
