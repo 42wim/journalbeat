@@ -49,7 +49,9 @@ func MapStrFromJournalEntry(ev *sdjournal.JournalEntry, cleanKeys bool, convertT
 		nv := makeNewValue(v, convertToNumbers)
 		// strip de suffix from nomad containers
 		if NomadContainers && nk == "container_name" {
-			m["container_name_prefix"] = ev.Fields["CONTAINER_NAME"][0 : len(ev.Fields["CONTAINER_NAME"])-37]
+			if len(ev.Fields["CONTAINER_NAME"]) > 37 {
+				m["container_name_prefix"] = ev.Fields["CONTAINER_NAME"][0 : len(ev.Fields["CONTAINER_NAME"])-37]
+			}
 		}
 		// message Field should be on the top level of the event
 		if nk == "message" {
